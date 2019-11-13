@@ -1,0 +1,17 @@
+{
+  "name": "maze-battle-royale",
+  "version": "1.0.0",
+  "description": "tetris 99 but with mazes",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "cdw2014",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "p5": "^0.10.2",
+    "socket.io": "^2.3.0"
+  }
+}
