@@ -4,7 +4,7 @@
   "description": "tetris 99 but with mazes",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "cdw2014",
@@ -13,5 +13,9 @@
     "express": "^4.17.1",
     "p5": "^0.10.2",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "concurrently": "^5.0.0",
+    "nodemon": "^1.19.4"
   }
 }
