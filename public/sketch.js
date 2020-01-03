@@ -54,7 +54,7 @@ function setup() {
 		leaderboardP = createP(leaderboardToString());
 		console.log(newLeaderboard, isFinished);
 		if (host && isFinished) {
-			console.log('test');
+			console.log('host and finsihed');
 			reset();
 		}
 	});
@@ -140,6 +140,8 @@ function reset() {
 	}
 	available = grid;
 	current = grid[int(random(0, rows * cols))];
+	console.log(isGenerated);
+	draw();
 }
 
 function finishedMaze(tries = 0) {
@@ -151,7 +153,7 @@ function finishedMaze(tries = 0) {
 
 function draw() {
 	if (inGame && !isMazeComplete) {
-		background(51);
+		background(0);
 		for (var i = 0; i < grid.length; i++) {
 			grid[i].show();
 		}
@@ -163,6 +165,7 @@ function draw() {
 				finishedMaze();
 			}
 		} else {
+			console.log('123124124124', wallsRemoved < cols * rows - 1);
 			if (wallsRemoved < cols * rows - 1) {
 				if (!current.isFinished) {
 					// CHOOSE RANDOM NEIGHBOR
@@ -194,6 +197,7 @@ function draw() {
 				}
 				// GET NEW CURRENT (RANDOM)
 				current = available[int(random(0, available.length))];
+				draw();
 			} else {
 				socket.emit('generation', { grid: grid, code: gameCode });
 				isGenerated = true;
