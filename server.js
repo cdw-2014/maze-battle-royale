@@ -1,19 +1,18 @@
 var express = require('express');
 var app = express();
-var server = app.listen(process.env.PORT || 3000, listen);
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+var port = process.env.PORT || 3000;
 
-function listen() {
-	var host = server.address().address;
-	var port = server.address().port;
-	console.log('Example app listening at http://' + host + ':' + port);
-}
+server.listen(port, function() {
+	console.log('Server listening at port %d', port);
+});
 
 app.use(express.static('public'));
-var io = require('socket.io')(server);
 
 let lobbies = [];
 
-io.sockets.on('connection', function(socket) {
+io.on('connection', function(socket) {
 	console.log('Client: ' + socket.id);
 	socket.on('createLobby', function(data) {
 		let { code, name } = data;
@@ -70,7 +69,9 @@ io.sockets.on('connection', function(socket) {
 					lobby.mazeRank = [];
 				}
 				// PUSH PLAYERS TO MAZE RANKING AS THEY FINISH
-				lobby.mazeRank.push(socket.id);
+				if (!lobby.mazeRank.includes(socket.id)) {
+					lobby.mazeRank.push(socket.id);
+				}
 				// CREATE LEADERBOARD (ONLY FOR FIRST MAZE) AND INITIATE SCORES TO ZERO
 				if (!lobby.hasOwnProperty('leaderboard')) {
 					lobby.leaderboard = [];
@@ -90,10 +91,12 @@ io.sockets.on('connection', function(socket) {
 					}
 				}
 				lobby.leaderboard = lobby.leaderboard.sort((a, b) => b.score - a.score);
+				console.log('TESTTTT', lobby.mazeRank, lobby.players);
 				let isFinished = lobby.mazeRank.length >= lobby.players.length;
 				if (isFinished) {
 					delete lobby.mazeRank;
 				}
+				console.log('IS FINISHED???', isFinished);
 				io.to(code).emit('updateLeaderboard', { newLeaderboard: lobby.leaderboard, isFinished });
 				callback(true);
 			}

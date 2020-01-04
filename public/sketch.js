@@ -1,5 +1,5 @@
 var cols, rows;
-var w = 50;
+var w = 30;
 var grid = [];
 var available = [];
 var current;
@@ -20,14 +20,14 @@ var leaderboard = [];
 var socket;
 let waitingP;
 let leaderboardP;
+var io = require('socket.io-client');
 
 function setup() {
-	socket = io.connect('http://localhost:3000');
+	socket = io();
 	socket.on('playerJoined', function(player) {
 		console.log(player);
 	});
 	socket.on('updateMaze', function(newGrid) {
-		console.log('TEST UPDATE MAZE');
 		grid = [];
 		cursorX = 0;
 		cursorY = 0;
@@ -52,13 +52,11 @@ function setup() {
 			leaderboardP.remove();
 		}
 		leaderboardP = createP(leaderboardToString());
-		console.log(newLeaderboard, isFinished);
 		if (host && isFinished) {
-			console.log('host and finsihed');
 			reset();
 		}
 	});
-	createCanvas(500, 500);
+	createCanvas(600, 600);
 	cols = floor(width / w);
 	rows = floor(height / w);
 	let enterName = createInput().attribute('placeholder', 'Enter Display Name');
@@ -140,12 +138,11 @@ function reset() {
 	}
 	available = grid;
 	current = grid[int(random(0, rows * cols))];
-	console.log(isGenerated);
 	draw();
 }
 
 function finishedMaze(tries = 0) {
-	if (tries > 10) return;
+	if (tries > 0) return;
 	socket.emit('finishedMaze', gameCode, function(registered) {
 		registered ? (isMazeComplete = true) : finishedMaze(tries + 1);
 	});
@@ -165,7 +162,6 @@ function draw() {
 				finishedMaze();
 			}
 		} else {
-			console.log('123124124124', wallsRemoved < cols * rows - 1);
 			if (wallsRemoved < cols * rows - 1) {
 				if (!current.isFinished) {
 					// CHOOSE RANDOM NEIGHBOR
@@ -229,6 +225,32 @@ function keyPressed() {
 			cursorX++;
 		}
 	}
+	selected = grid.filter((cell) => cell.i === cursorX && cell.j === cursorY)[0];
+	selected.highlight();
+}
+
+function mouseMoved() {
+	let mousePositionX = floor(mouseX / w);
+	let mousePositionY = floor(mouseY / w);
+	let differenceX = mousePositionX - cursorX;
+	let differenceY = mousePositionY - cursorY;
+	if (mousePositionX >= 0 && mousePositionX < width / w && mousePositionY >= 0 && mousePositionY < height / w) {
+		if (differenceX === 1 && differenceY === 0 && !selected.walls[1]) {
+			cursorX = mousePositionX;
+			cursorY = mousePositionY;
+		} else if (differenceX === -1 && differenceY === 0 && !selected.walls[3]) {
+			cursorX = mousePositionX;
+			cursorY = mousePositionY;
+		} else if (differenceX === 0 && differenceY === 1 && !selected.walls[2]) {
+			cursorX = mousePositionX;
+			cursorY = mousePositionY;
+		} else if (differenceX === 0 && differenceY === -1 && !selected.walls[0]) {
+			cursorX = mousePositionX;
+			cursorY = mousePositionY;
+		}
+	}
+	selected = grid[index(mousePositionX, mousePositionY)];
+	selected.highlight();
 }
 
 function index(i, j) {

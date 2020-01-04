@@ -2,22 +2,15 @@
 	"name": "maze-battle-royale",
 	"version": "1.0.0",
 	"description": "tetris 99 but with mazes",
-	"main": "index.js",
+	"main": "server.js",
 	"scripts": {
-		"start": "nodemon server.js",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"start": "node server.js"
 	},
 	"author": "cdw2014",
 	"license": "ISC",
 	"dependencies": {
 		"express": "^4.17.1",
-		"p5": "^0.10.2",
 		"socket.io": "^2.3.0",
-		"concurrently": "^5.0.2",
-		"nodemon": "^1.19.4"
-	},
-	"devDependencies": {
-		"concurrently": "^5.0.2",
-		"nodemon": "^1.19.4"
+		"p5": "^0.9.0"
 	}
 }
